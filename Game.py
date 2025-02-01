@@ -4,6 +4,7 @@ import pandas
 
 from Constants import *
 from Map import Map
+from Player import Player
 
 
 def load_image(name, colorkey=None):
@@ -48,6 +49,7 @@ class Game:
         pygame.display.set_caption('PHP killer')
         self.clock = pygame.time.Clock()
         self.level = 1
+        self.delta = 1
 
     def start_screen(self):
         background = load_image('Data/Sprites/background_start_screen.png')
@@ -117,6 +119,7 @@ class Game:
 
     def new_game(self):
         self.map = Map(self, f'Data/Maps/level_{self.level}.txt')
+        self.player = Player(self)
         self.run()
 
     def run(self):
@@ -127,6 +130,7 @@ class Game:
 
             self.screen.fill('#000000')
             self.map.draw()
+            self.player.update()
 
             pygame.display.flip()
-            self.clock.tick(FPS)
+            self.delta = self.clock.tick(FPS)
