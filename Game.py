@@ -6,6 +6,7 @@ from Constants import *
 from Rendering import *
 from Map import Map
 from Player import Player
+from Texturing import *
 
 
 def load_image(name, colorkey=None):  # функция по загрузке изображений
@@ -121,6 +122,7 @@ class Game:  # сама игра
     def new_game(self):  # запуск новой игры
         self.map = Map(self, f'Data/Maps/level_{self.level}.txt')
         self.player = Player(self)
+        self.Texturing = Texturing(self)
         self.raytracing = Raytracing(self)
         self.run()
 
