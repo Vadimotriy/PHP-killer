@@ -9,28 +9,29 @@ class Raytracing:  # класс отрисовки лучей
         self.game = game
         self.raycasting_result = []
         self.object_to_texturing = []
-        self.textures = self.game.Texturing.wall_textures
+        self.textures = self.game.texturing.wall_textures
 
     def get_objects_to_render(self):  # получаем объекты для рендера
         self.object_to_rendering = []
         for ray, data in enumerate(self.raycasting_result):
             depth, projection_screen, texture, offset = data
 
-            if projection_screen < HEIGHT:
-                wall = self.textures[texture].subsurface(offset * (256 - SCALE), 0, SCALE, 256)
-                wall = pygame.transform.scale(wall, (SCALE, projection_screen))
-                wall_pos = (ray * SCALE, 450 - projection_screen // 2)
-            else:
+            wall = self.textures[texture].subsurface(offset * (256 - SCALE), 0, SCALE, 256)
+            wall = pygame.transform.scale(wall, (SCALE, projection_screen))
+            wall_pos = (ray * SCALE, 450 - projection_screen // 2)
+            '''else:
                 texture_height = 256 * HEIGHT / projection_screen
-                wall = self.textures[texture].subsurface(offset * (256 - SCALE), 128 - texture_height // 2, SCALE, 256)
+                wall = self.textures[texture].subsurface(offset * (256 - SCALE), 128 - texture_height // 2,
+                                                         SCALE, texture_height)
                 wall = pygame.transform.scale(wall, (SCALE, HEIGHT))
-                wall_pos = (ray * SCALE, 0)
+                wall_pos = (ray * SCALE, 0)'''
 
             self.object_to_rendering.append((depth, wall, wall_pos))
 
 
     def ray_cast(self):  # отрисовка лучей, получаем точки для рендера
         self.raycasting_result.clear()
+        texture_vert, texture_hort = 1, 1
         x, y = self.game.player.pos()
         x_map, y_map = self.game.player.floor_pos()
         ray_angle = self.game.player.angle - (PLAYER_FOV / 2) + 0.0001
@@ -81,6 +82,8 @@ class Raytracing:  # класс отрисовки лучей
                 depth, texture = depth_hort, texture_hort
                 x_hort %= 1
                 offset = (1 - x_hort) if sin > 0 else x_hort
+
+            depth *= math.cos(self.game.player.angle - ray_angle)
 
             projection_screen = SCREEN_DIST / (depth + 0.0001)
             self.raycasting_result.append((depth, projection_screen, texture, offset))
