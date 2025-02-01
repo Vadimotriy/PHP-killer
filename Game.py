@@ -8,7 +8,7 @@ from Map import Map
 from Player import Player
 
 
-def load_image(name, colorkey=None):
+def load_image(name, colorkey=None):  # функция по загрузке изображений
     image = pygame.image.load(name)
 
     if colorkey is not None:
@@ -22,12 +22,12 @@ def load_image(name, colorkey=None):
     return image
 
 
-def terminate():
+def terminate():  # функция по выходу из игры
     pygame.quit()
     sys.exit()
 
 
-class Button(pygame.sprite.Sprite):
+class Button(pygame.sprite.Sprite):  # класс кнопок
     def __init__(self, spite_group, y):
         super().__init__(spite_group)
         image = pygame.Surface((400, 70))
@@ -43,8 +43,8 @@ class Button(pygame.sprite.Sprite):
         return False
 
 
-class Game:
-    def __init__(self):
+class Game:  # сама игра
+    def __init__(self):  # инициализация
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('PHP killer')
@@ -52,7 +52,7 @@ class Game:
         self.level = 1
         self.delta = 1
 
-    def start_screen(self):
+    def start_screen(self):  # стартовое окно
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
@@ -60,12 +60,12 @@ class Game:
         text = [self.font.render('Играть', True, '#FFFFFF'),
                 self.font.render('Таблица лидеров', True, '#FFFFFF')]
 
-        button_play = pygame.sprite.Group()
+        button_play = pygame.sprite.Group()  # кнопка играть
         play_button = Button(button_play, 200 - 20)
         button_play.draw(self.screen)
         self.screen.blit(text[0], (WIDTH // 2 - text[0].get_width() // 2, 200))
 
-        button_table = pygame.sprite.Group()
+        button_table = pygame.sprite.Group()  # кнопка таблицы лидеров
         table_button = Button(button_table, 300 - 20)
         button_table.draw(self.screen)
         self.screen.blit(text[1], (WIDTH // 2 - text[1].get_width() // 2, 300))
@@ -75,9 +75,9 @@ class Game:
                 if event.type == pygame.QUIT:
                     terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if play_button.update(event.pos):
+                    if play_button.update(event.pos):  # переход к игре
                         return True
-                    elif table_button.update(event.pos):
+                    elif table_button.update(event.pos):  # переход к таблице лидеров
                         self.table()
 
                         self.screen.blit(background, (0, 0))
@@ -89,7 +89,7 @@ class Game:
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    def table(self):
+    def table(self):  # таблица лидеров
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
@@ -103,7 +103,7 @@ class Game:
         info = [(self.font.render('Имя', True, '#FFFFFF'),
                  self.font.render('Очки', True, '#FFFFFF'))]
         x, y = 200, 100
-        for i, j in info + list(zip(names, points)):
+        for i, j in info + list(zip(names, points)):  # вывод результатов
             self.screen.blit(i, (x, y))
             self.screen.blit(j, (x + 650, y))
             y += 150
@@ -112,26 +112,25 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminate()
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN:  # возврат к стартовому окну
                     return True
 
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    def new_game(self):
+    def new_game(self):  # запуск новой игры
         self.map = Map(self, f'Data/Maps/level_{self.level}.txt')
         self.player = Player(self)
         self.raytracing = Raytracing(self)
         self.run()
 
-    def run(self):
+    def run(self):  # запуск
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminate()
 
             self.screen.fill('#000000')
-            self.map.draw()
             self.player.update()
             self.raytracing.ray_cast()
 

@@ -4,13 +4,13 @@ import math
 from Constants import *
 
 
-class Player:
-    def __init__(self, game):
+class Player:  # класс игрока
+    def __init__(self, game):  # инициализация
         self.game = game
         self.x, self.y = PLAYER_POS
         self.angle = 0
 
-    def move(self):
+    def move(self):  # передвижение
         sin = math.sin(self.angle)
         cos = math.cos(self.angle)
 
@@ -40,16 +40,15 @@ class Player:
             self.angle += PLAYER_ROT_SPEED * self.game.delta
         self.angle %= 2 * math.pi
 
-    def draw(self):
+    def draw(self):  # тестовая отрисовка
         '''end = (self.x * 100 + WIDTH * math.cos(self.angle), self.y * 100 + HEIGHT * math.sin(self.angle))
         pygame.draw.line(self.game.screen, '#FF9900', (self.x * 100, self.y * 100), end, 2)'''
         pygame.draw.circle(self.game.screen, '#00FF00', (self.x * 100, self.y * 100), 10)
 
-    def update(self):
+    def update(self):  # обновление данных
         self.move()
-        self.draw()
 
-    def check_wall(self, move_x, move_y):
+    def check_wall(self, move_x, move_y):  # проверка стены
         def check(x, y):
             return True if (int(y), int(x)) not in self.game.map.walls else False
 
@@ -58,8 +57,8 @@ class Player:
         if check(self.x, self.y + move_y):
             self.y += move_y
 
-    def pos(self):
+    def pos(self):  # координата точная
         return self.x, self.y
 
-    def floor_pos(self):
+    def floor_pos(self):  # координата клетки
         return int(self.x), int(self.y)

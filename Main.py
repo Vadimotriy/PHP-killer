@@ -1,6 +1,6 @@
 from Game import *
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # запуск игры
     game = Game()
     game.start_screen()
     game.new_game()

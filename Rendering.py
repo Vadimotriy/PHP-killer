@@ -4,11 +4,11 @@ import math
 from Constants import *
 
 
-class Raytracing:
-    def __init__(self, game):
+class Raytracing:  # класс отрисовки лучей
+    def __init__(self, game):  # инициализация
         self.game = game
 
-    def ray_cast(self):
+    def ray_cast(self):  # отрисовка лучей
         x, y = self.game.player.pos()
         x_map, y_map = self.game.player.floor_pos()
         ray_angle = self.game.player.angle - (PLAYER_FOV / 2) + 0.0001
@@ -50,8 +50,14 @@ class Raytracing:
                 depth_vert += delta_depth
 
             depth = min(depth_vert, depth_hort)
-
-            pygame.draw.line(self.game.screen, 'yellow', (100 * x, 100 * y),
-                             (100 * x + 100 * depth * cos, 100 * y + 100 * depth * sin), 2)
-
+            self.draw_wals(depth, ray, ray_angle)
             ray_angle += DELTA_ANGLE
+
+    def draw_wals(self, depth, ray, ray_angle):  # отрисовка стен
+        depth *= math.cos(self.game.player.angle - ray_angle)
+        color = [255 / (1 + depth ** 5 * 0.00002) for _ in range(3)]
+
+        projection_screen = SCREEN_DIST / (depth + 0.0001)
+        rect = (ray * SCALE, (HEIGHT // 2) - projection_screen // 2, SCALE, projection_screen)
+
+        pygame.draw.rect(self.game.screen, color, rect)
