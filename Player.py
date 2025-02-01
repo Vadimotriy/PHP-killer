@@ -41,9 +41,8 @@ class Player:
         self.angle %= 2 * math.pi
 
     def draw(self):
-        end = (self.x * 100 + WIDTH * math.cos(self.angle), self.y * 100 + HEIGHT * math.sin(self.angle))
-        pygame.draw.line(self.game.screen, '#FF9900', (self.x * 100, self.y * 100), end, 2)
-
+        '''end = (self.x * 100 + WIDTH * math.cos(self.angle), self.y * 100 + HEIGHT * math.sin(self.angle))
+        pygame.draw.line(self.game.screen, '#FF9900', (self.x * 100, self.y * 100), end, 2)'''
         pygame.draw.circle(self.game.screen, '#00FF00', (self.x * 100, self.y * 100), 10)
 
     def update(self):

@@ -3,6 +3,7 @@ import sys
 import pandas
 
 from Constants import *
+from Rendering import *
 from Map import Map
 from Player import Player
 
@@ -120,6 +121,7 @@ class Game:
     def new_game(self):
         self.map = Map(self, f'Data/Maps/level_{self.level}.txt')
         self.player = Player(self)
+        self.raytracing = Raytracing(self)
         self.run()
 
     def run(self):
@@ -131,6 +133,7 @@ class Game:
             self.screen.fill('#000000')
             self.map.draw()
             self.player.update()
+            self.raytracing.ray_cast()
 
             pygame.display.flip()
             self.delta = self.clock.tick(FPS)
