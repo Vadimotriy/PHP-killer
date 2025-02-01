@@ -2,4 +2,5 @@ import pygame
 
 
 class Raytracing:
-    pass
+    def __init__(self):
+        pass
