@@ -135,6 +135,7 @@ class Game:  # сама игра
             self.screen.fill('#000000')
             self.player.update()
             self.raytracing.ray_cast()
+            self.raytracing.get_objects_ti_render()
 
             pygame.display.flip()
             self.delta = self.clock.tick(FPS)

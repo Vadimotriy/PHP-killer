@@ -52,9 +52,10 @@ class Player:  # класс игрока
         def check(x, y):
             return True if (int(y), int(x)) not in self.game.map.walls else False
 
-        if check(self.x + move_x, self.y):
+        scale = PLAYER_SIZE / self.game.delta
+        if check(self.x + move_x * scale, self.y):
             self.x += move_x
-        if check(self.x, self.y + move_y):
+        if check(self.x, self.y + move_y * scale):
             self.y += move_y
 
     def pos(self):  # координата точная

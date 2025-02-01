@@ -7,8 +7,30 @@ from Constants import *
 class Raytracing:  # класс отрисовки лучей
     def __init__(self, game):  # инициализация
         self.game = game
+        self.raycasting_result = []
+        self.object_to_texturing = []
+        self.textures = self.game.Texturing.wall_textures
 
-    def ray_cast(self):  # отрисовка лучей
+    def get_objects_to_render(self):  # получаем объекты для рендера
+        self.object_to_rendering = []
+        for ray, data in enumerate(self.raycasting_result):
+            depth, projection_screen, texture, offset = data
+
+            if projection_screen < HEIGHT:
+                wall = self.textures[texture].subsurface(offset * (256 - SCALE), 0, SCALE, 256)
+                wall = pygame.transform.scale(wall, (SCALE, projection_screen))
+                wall_pos = (ray * SCALE, 450 - projection_screen // 2)
+            else:
+                texture_height = 256 * HEIGHT / projection_screen
+                wall = self.textures[texture].subsurface(offset * (256 - SCALE), 128 - texture_height // 2, SCALE, 256)
+                wall = pygame.transform.scale(wall, (SCALE, HEIGHT))
+                wall_pos = (ray * SCALE, 0)
+
+            self.object_to_rendering.append((depth, wall, wall_pos))
+
+
+    def ray_cast(self):  # отрисовка лучей, получаем точки для рендера
+        self.raycasting_result.clear()
         x, y = self.game.player.pos()
         x_map, y_map = self.game.player.floor_pos()
         ray_angle = self.game.player.angle - (PLAYER_FOV / 2) + 0.0001
@@ -28,6 +50,7 @@ class Raytracing:  # класс отрисовки лучей
             for i in range(MAX_DEPTH):
                 coords = int(y_hort), int(x_hort)
                 if coords in self.game.map.walls:
+                    texture_hort = self.game.map.map[coords[0]][coords[1]]
                     break
                 x_hort += dx
                 y_hort += dy
@@ -44,20 +67,22 @@ class Raytracing:  # класс отрисовки лучей
             for i in range(MAX_DEPTH):
                 coords = int(y_vert), int(x_vert)
                 if coords in self.game.map.walls:
+                    texture_vert = self.game.map.map[coords[0]][coords[1]]
                     break
                 x_vert += dx
                 y_vert += dy
                 depth_vert += delta_depth
 
-            depth = min(depth_vert, depth_hort)
-            self.draw_wals(depth, ray, ray_angle)
+            if depth_vert < depth_hort:
+                depth, texture = depth_vert, texture_vert
+                y_vert %= 1
+                offset = y_vert if cos > 0 else (1 - y_vert)
+            else:
+                depth, texture = depth_hort, texture_hort
+                x_hort %= 1
+                offset = (1 - x_hort) if sin > 0 else x_hort
+
+            projection_screen = SCREEN_DIST / (depth + 0.0001)
+            self.raycasting_result.append((depth, projection_screen, texture, offset))
+
             ray_angle += DELTA_ANGLE
-
-    def draw_wals(self, depth, ray, ray_angle):  # отрисовка стен
-        depth *= math.cos(self.game.player.angle - ray_angle)
-        color = [255 / (1 + depth ** 5 * 0.00002) for _ in range(3)]
-
-        projection_screen = SCREEN_DIST / (depth + 0.0001)
-        rect = (ray * SCALE, (HEIGHT // 2) - projection_screen // 2, SCALE, projection_screen)
-
-        pygame.draw.rect(self.game.screen, color, rect)

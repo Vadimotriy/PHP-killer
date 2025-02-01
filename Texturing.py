@@ -8,7 +8,7 @@ class Texturing:
     def __init__(self, game):
         self.game = game
         self.screen = game.screen
-        self.walltextures = self.walltextures()
+        self.wall_textures = self.walltextures()
 
     def texture_change(self, path):
         return pygame.transform.scale((pygame.image.load(path).convert_alpha()), (256, 256))
