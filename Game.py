@@ -3,6 +3,7 @@ import sys
 import pandas
 
 from Constants import *
+from Map import Map
 
 
 def load_image(name, colorkey=None):
@@ -46,6 +47,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('PHP killer')
         self.clock = pygame.time.Clock()
+        self.level = 1
 
     def start_screen(self):
         background = load_image('Data/Sprites/background_start_screen.png')
@@ -109,6 +111,22 @@ class Game:
                     terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     return True
+
+            pygame.display.flip()
+            self.clock.tick(FPS)
+
+    def new_game(self):
+        self.map = Map(self, f'Data/Maps/level_{self.level}.txt')
+        self.run()
+
+    def run(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+
+            self.screen.fill('#000000')
+            self.map.draw()
 
             pygame.display.flip()
             self.clock.tick(FPS)
