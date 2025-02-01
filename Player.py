@@ -42,7 +42,6 @@ class Player:  # класс игрока
 
     def update(self):  # обновление данных
         self.move()
-        self.draw()
         self.mouse()
 
     def check_wall(self, move_x, move_y):  # проверка стены
