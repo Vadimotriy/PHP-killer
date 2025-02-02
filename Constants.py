@@ -1,6 +1,5 @@
 import math
 
-
 WIDTH = 1600
 HEIGHT = 900
 

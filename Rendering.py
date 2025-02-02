@@ -1,5 +1,4 @@
 import pygame
-import math
 
 from Constants import *
 
@@ -8,10 +7,9 @@ class Raytracing:  # класс отрисовки лучей
     def __init__(self, game):  # инициализация
         self.game = game
         self.raycasting_result = []
-        self.object_to_texturing = []
         self.textures = self.game.texturing.wall_textures
 
-    def get_objects_to_render(self):  # получаем объекты для рендера
+    def get_objects_to_render(self):  # получаем координаты для наложения текстур
         self.object_to_rendering = []
         for ray, data in enumerate(self.raycasting_result):
             depth, projection_screen, texture, offset = data
@@ -89,3 +87,7 @@ class Raytracing:  # класс отрисовки лучей
             self.raycasting_result.append((depth, projection_screen, texture, offset))
 
             ray_angle += DELTA_ANGLE
+
+    def update(self):  # запуск функций
+        self.ray_cast()
+        self.get_objects_to_render()

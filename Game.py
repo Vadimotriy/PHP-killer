@@ -1,12 +1,11 @@
-import pygame
 import sys
 import pandas
 
-from Constants import *
 from Rendering import *
 from Map import Map
 from Player import Player
 from Texturing import *
+from Sprites import Sprite
 
 
 def load_image(name, colorkey=None):  # функция по загрузке изображений
@@ -50,6 +49,7 @@ class Game:  # сама игра
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('PHP killer')
         self.clock = pygame.time.Clock()
+
         self.level = 1
         self.delta = 1
 
@@ -119,12 +119,14 @@ class Game:  # сама игра
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    def new_game(self):  # запуск новой игры
+    def new_game(self):  # запуск нового уровня
+        pygame.mouse.set_visible(False)
+
         self.map = Map(self, f'Data/Maps/level_{self.level}.txt')
         self.player = Player(self)
-        pygame.mouse.set_visible(False)
         self.texturing = Texturing(self)
         self.raytracing = Raytracing(self)
+        self.sprite = Sprite()
         self.run()
 
     def run(self):  # запуск
@@ -137,8 +139,8 @@ class Game:  # сама игра
                         terminate()
 
             self.player.update()
-            self.raytracing.ray_cast()
-            self.raytracing.get_objects_to_render()
+            self.raytracing.update()
+            self.sprite.update()
 
             self.texturing.draw()
 
