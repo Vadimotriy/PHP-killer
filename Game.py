@@ -1,5 +1,5 @@
 import sys
-import pandas
+#import pandas
 
 from Rendering import *
 from Map import Map
@@ -90,7 +90,7 @@ class Game:  # сама игра
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    def table(self):  # таблица лидеров
+    '''def table(self):  # таблица лидеров
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
@@ -117,7 +117,7 @@ class Game:  # сама игра
                     return True
 
             pygame.display.flip()
-            self.clock.tick(FPS)
+            self.clock.tick(FPS)'''
 
     def new_game(self):  # запуск нового уровня
         pygame.mouse.set_visible(False)
@@ -126,7 +126,7 @@ class Game:  # сама игра
         self.player = Player(self)
         self.texturing = Texturing(self)
         self.raytracing = Raytracing(self)
-        self.sprite = Sprite()
+        self.sprite = Sprite(self)
         self.run()
 
     def run(self):  # запуск
