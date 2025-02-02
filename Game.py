@@ -28,7 +28,7 @@ def terminate():  # функция по выходу из игры
 
 
 class Button(pygame.sprite.Sprite):  # класс кнопок
-    def __init__(self, spite_group, y):
+    def __init__(self, spite_group, y):  # инициализация
         super().__init__(spite_group)
         image = pygame.Surface((400, 70))
         image.fill('#AAAAAA')
@@ -37,7 +37,7 @@ class Button(pygame.sprite.Sprite):  # класс кнопок
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = 600, y
 
-    def update(self, pos):
+    def update(self, pos):  # обновление
         if self.rect.collidepoint(pos):
             return True
         return False
@@ -113,7 +113,7 @@ class Game:  # сама игра
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminate()
-                if event.type == pygame.MOUSEBUTTONDOWN:  # возврат к стартовому окну
+                if event.type == pygame.MOUSEBUTTONDOWN:  # возврат к стартовому окну при любом клике
                     return True
 
             pygame.display.flip()
@@ -130,7 +130,7 @@ class Game:  # сама игра
 
         self.run()
 
-    def run(self):  # запуск
+    def run(self):  # цикл основной игры
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

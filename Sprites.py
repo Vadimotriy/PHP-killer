@@ -45,12 +45,12 @@ class Sprite:
         if -self.imagewidth // 2 < self.x_screen < (WIDTH + (self.imagewidth // 2)) and self.norm_dist > 0.5:
             self.sprite_projection()
 
-    def update(self):
+    def update(self):  # обновление
         self.sprite_get()
 
 
-class AnimatedSpite(Sprite):
-    def __init__(self, game, pos, path, max_num, scale=1.0, shift=0.0, time=120):
+class AnimatedSpite(Sprite):  # класс анимированных спрайтов (для оружия и врагов)
+    def __init__(self, game, pos, path, max_num, scale=1.0, shift=0.0, time=120):  # инициализация
         super().__init__(game, pos, f'{path}/1.png', scale, shift)
         self.time = time
         self.time_prev = pygame.time.get_ticks()
@@ -61,40 +61,37 @@ class AnimatedSpite(Sprite):
 
         self.get_images()
 
-    def get_images(self):
+    def get_images(self):  # получаем все изображения для спрайта
         self.images = deque()
         for i in range(1, self.max_num + 1):
             self.images.append(f'{self.path}/{i}.png')
 
-    def check_time(self):
+    def check_time(self):  # проверяем нужно ли поменять изображение для спрайта
         self.state = False
         now = pygame.time.get_ticks()
         if now - self.time_prev > self.time:
             self.time_prev = now
             self.state = True
 
-    def animate(self):
+    def animate(self):  # меняем изображение в спрайте
         if self.state:
             self.images.rotate(-1)
             self.image = pygame.image.load(self.images[0]).convert_alpha()
 
-    def update(self):
+    def update(self):  # обновление
         super().update()
         self.check_time()
         self.animate()
 
 
-class AllObjects:
-    def __init__(self, game):
+class AllObjects:  # класс, в котором хранятся все объекты
+    def __init__(self, game):  # инициализация
         self.game = game
         self.list = []
 
         for i in OBJECTS_COORDS[self.game.level]:
-            self.add_spite(Sprite(self.game, i))
+            self.list.append(Sprite(self.game, i))
 
-    def add_spite(self, object):
-        self.list.append(object)
-
-    def update(self):
+    def update(self):  # обновление
         for i in self.list:
             i.update()

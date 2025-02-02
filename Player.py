@@ -17,7 +17,7 @@ class Player:  # класс игрока
         speed_x = cos * self.game.delta * PLAYER_SPEED
         speed_y = sin * self.game.delta * PLAYER_SPEED
 
-        keys = pygame.key.get_pressed()
+        keys = pygame.key.get_pressed()  # передвижение клавишами
         if keys[pygame.K_w]:
             move_x += speed_x
             move_y += speed_y
@@ -53,7 +53,7 @@ class Player:  # класс игрока
         if check(self.x, int(self.y + move_y * scale)):
             self.y += move_y
 
-    def mouse(self):
+    def mouse(self):  # управлению мышью
         x, y = pygame.mouse.get_pos()
         if x < BORDER_LEFT or x > BORDER_RIGHT or y < BORDER_LEFT or y > BORDER_DOWN:
             pygame.mouse.set_pos(800, 450)
