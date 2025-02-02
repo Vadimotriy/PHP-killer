@@ -6,6 +6,7 @@ from Map import Map
 from Player import Player
 from Texturing import *
 from Sprites import AllObjects
+from  Weapon import Weapon
 
 
 def load_image(name, colorkey=None):  # функция по загрузке изображений
@@ -41,6 +42,13 @@ class Button(pygame.sprite.Sprite):  # класс кнопок
         if self.rect.collidepoint(pos):
             return True
         return False
+
+
+class Sound:
+    def __init__(self, game):
+        self.game = game
+        pygame.mixer.init()
+        self.gun = pygame.mixer.Sound('Data/Sprites/gun/audio.mp3')
 
 
 class Game:  # сама игра
@@ -127,6 +135,8 @@ class Game:  # сама игра
         self.texturing = Texturing(self)
         self.raytracing = Raytracing(self)
         self.all_objects = AllObjects(self)
+        self.weapon = Weapon(self)
+        self.sound = Sound(self)
 
         self.run()
 
@@ -138,12 +148,17 @@ class Game:  # сама игра
                 if event.type == pygame.KEYDOWN:
                     if event.key == 27:
                         terminate()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.player.shooting()
 
             self.player.update()
             self.raytracing.update()
             self.all_objects.update()
+            self.weapon.update()
 
             self.texturing.draw()
+            self.weapon.draw()
 
             pygame.display.flip()
             self.delta = self.clock.tick(FPS)

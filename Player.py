@@ -1,5 +1,6 @@
 import pygame
 
+
 from Constants import *
 
 
@@ -8,6 +9,13 @@ class Player:  # класс игрока
         self.game = game
         self.x, self.y = PLAYER_POS
         self.angle = 0
+        self.shoot = False
+
+    def shooting(self):
+        if not self.shoot and not self.game.weapon.reloading:
+            self.game.sound.gun.play()
+            self.shoot = True
+            self.game.weapon.reloading = True
 
     def move(self):  # передвижение
         sin = math.sin(self.angle)
