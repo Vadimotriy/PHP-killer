@@ -22,7 +22,7 @@ class Texturing:
         pygame.draw.rect(self.screen, (30, 30, 30), (0, (HEIGHT // 2), WIDTH, HEIGHT)) #пол
 
     def object_render(self):
-        object_list = self.game.raytracing.object_to_rendering
+        object_list = sorted(self.game.raytracing.object_to_rendering, key=lambda x: x[0], reverse=True)
         for depth, image, pos in object_list:
             self.screen.blit(image, pos)
 

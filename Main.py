@@ -1,4 +1,4 @@
-from Game import *
+from Game import Game
 
 if __name__ == '__main__':  # запуск игры
     game = Game()

@@ -23,3 +23,9 @@ BORDER_LEFT = 400
 BORDER_RIGHT = 1100
 BORDER_DOWN = 500
 MAX_REL = 40
+
+OBJECTS_COORDS = {
+    1: ((6.5, 3.5), (1.5, 7.5), (13.5, 1.5), (8.3, 4.5), (11.5, 7.5)),
+    2: (),
+    3: ()
+}

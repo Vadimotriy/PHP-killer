@@ -1,11 +1,11 @@
 import sys
-#import pandas
+import pandas
 
 from Rendering import *
 from Map import Map
 from Player import Player
 from Texturing import *
-from Sprites import Sprite
+from Sprites import AllObjects
 
 
 def load_image(name, colorkey=None):  # функция по загрузке изображений
@@ -90,7 +90,7 @@ class Game:  # сама игра
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    '''def table(self):  # таблица лидеров
+    def table(self):  # таблица лидеров
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
@@ -117,7 +117,7 @@ class Game:  # сама игра
                     return True
 
             pygame.display.flip()
-            self.clock.tick(FPS)'''
+            self.clock.tick(FPS)
 
     def new_game(self):  # запуск нового уровня
         pygame.mouse.set_visible(False)
@@ -126,7 +126,8 @@ class Game:  # сама игра
         self.player = Player(self)
         self.texturing = Texturing(self)
         self.raytracing = Raytracing(self)
-        self.sprite = Sprite(self)
+        self.all_objects = AllObjects(self)
+
         self.run()
 
     def run(self):  # запуск
@@ -140,7 +141,7 @@ class Game:  # сама игра
 
             self.player.update()
             self.raytracing.update()
-            self.sprite.update()
+            self.all_objects.update()
 
             self.texturing.draw()
 
