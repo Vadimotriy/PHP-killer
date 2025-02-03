@@ -1,5 +1,6 @@
 import sys
 import pandas
+import time
 
 from Rendering import *
 from Map import Map
@@ -62,7 +63,7 @@ class Game:  # сама игра
         pygame.display.set_caption('PHP killer')
         self.clock = pygame.time.Clock()
 
-        self.level = 2
+        self.level = 0
         self.delta = 1
 
     def start_screen(self):  # стартовое окно
@@ -89,6 +90,7 @@ class Game:  # сама игра
                     terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if play_button.update(event.pos):  # переход к игре
+                        self.start_time = time.time()  # засекаем время
                         return True
                     elif table_button.update(event.pos):  # переход к таблице лидеров
                         self.table()
@@ -132,6 +134,7 @@ class Game:  # сама игра
             self.clock.tick(FPS)
 
     def new_game(self):  # запуск нового уровня
+        self.level += 1
         pygame.mouse.set_visible(False)
 
         self.map = Map(self, f'Data/Maps/level_{self.level}.txt')  # создание всех объектов
@@ -142,6 +145,7 @@ class Game:  # сама игра
         self.all_objects.new_level()
         self.weapon = Weapon(self)
         self.sound = Sound(self)
+        self.num_php = NUMBER_OF_PHPS[self.level]
 
         self.run()
 
@@ -165,5 +169,18 @@ class Game:  # сама игра
             self.texturing.draw()  # отрисовка карты и оружия
             self.weapon.draw()
 
+            if self.num_php == 0:
+                break
+
             pygame.display.flip()
             self.delta = self.clock.tick(FPS)
+
+        if self.level != 3:
+            self.show_new_game()
+            self.new_game()
+
+    def show_new_game(self):
+        image = load_image('Data/Sprites/level_passed.jpg')
+        self.screen.blit(image, (0, 0))
+        pygame.display.flip()
+        time.sleep(3)

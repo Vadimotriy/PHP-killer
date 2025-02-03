@@ -2,10 +2,11 @@ import pygame
 
 from Constants import *
 from collections import deque
+from random import randint
 
 
 class Sprite:
-    def __init__(self, game, pos, path='Data/Sprites/NPC/php.png', scale=0.6, shift=0.45):
+    def __init__(self, game, pos, path='Data/Sprites/NPC/php_1.png', scale=0.6, shift=0.45):
         self.game = game
         self.player = game.player
         self.x, self.y = pos
@@ -53,6 +54,7 @@ class Sprite:
                 self.game.player.shoot = False
                 self.alive = False
                 self.game.sound.kill.play()
+                self.game.num_php -= 1
 
     def check_walls(self):  # проверка, находится ли игрок в прямой видимости от слоника
         if self.game.player.floor_pos() == (int(self.x), int(self.y)):
@@ -173,4 +175,5 @@ class AllObjects:  # класс, в котором хранятся все об�
         self.list.clear()
 
         for i in OBJECTS_COORDS[self.game.level]:  # выставляем всех слоников на карту
-            self.list.append(Sprite(self.game, i))
+            path = f'Data/Sprites/NPC/php_{randint(1, 3)}.png'
+            self.list.append(Sprite(self.game, i, path=path))

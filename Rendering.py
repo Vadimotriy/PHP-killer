@@ -17,13 +17,6 @@ class Raytracing:  # класс отрисовки лучей
             wall = self.textures[texture].subsurface(offset * (256 - SCALE), 0, SCALE, 256)
             wall = pygame.transform.scale(wall, (SCALE, projection_screen))
             wall_pos = (ray * SCALE, 450 - projection_screen // 2)
-            '''else:
-                texture_height = 256 * HEIGHT / projection_screen
-                wall = self.textures[texture].subsurface(offset * (256 - SCALE), 128 - texture_height // 2,
-                                                         SCALE, texture_height)
-                wall = pygame.transform.scale(wall, (SCALE, HEIGHT))
-                wall_pos = (ray * SCALE, 0)'''
-
             self.object_to_rendering.append((depth, wall, wall_pos))
 
     def ray_cast(self):  # отрисовка лучей, получаем точки для рендера
