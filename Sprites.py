@@ -16,6 +16,8 @@ class Sprite:
         self.scale = scale
         self.shift = shift
 
+        self.alive = True
+
     def sprite_projection(self):
         proj = SCREEN_DIST / self.norm_dist * self.scale
         pwidth, pheight = proj * self.image_ratio, proj
@@ -45,11 +47,87 @@ class Sprite:
         if -self.imagewidth // 2 < self.x_screen < (WIDTH + (self.imagewidth // 2)) and self.norm_dist > 0.5:
             self.sprite_projection()
 
+    def check_live(self):  # проверка жив ли слоник
+        if self.game.player.shoot and self.check_walls():
+            print(self.imagewidth)
+            if 800 - 128 < self.x_screen < 800 + 128:
+                self.game.player.shoot = False
+                self.alive = False
+                self.game.sound.kill.play()
+
+    def check_walls(self):  # проверка, находится ли игрок в прямой видимости от слоника
+        if self.game.player.floor_pos() == (int(self.x), int(self.y)):
+            return True
+
+        x, y = self.game.player.pos()
+        x_map, y_map = self.game.player.floor_pos()
+        wall_dist_vert, wall_dist_hort = 0, 0
+        player_dist_vert, player_dist_hort = 0, 0
+
+        sin = math.sin(self.theta)
+        cos = math.cos(self.theta)
+
+        # по горизонтали
+        y_hort, dy = (y_map + 1, 1) if sin > 0 else (y_map - 1e-6, -1)
+        depth_hort = (y_hort - y) / sin
+        x_hort = x + depth_hort * cos
+
+        delta_depth = dy / sin
+        dx = delta_depth * cos
+
+        for i in range(MAX_DEPTH):
+            coords = int(y_hort), int(x_hort)
+            if coords == (int(self.y), int(self.x)):
+                player_dist_hort = depth_hort
+                break
+            if coords in self.game.map.walls:
+                wall_dist_hort = depth_hort
+                break
+            x_hort += dx
+            y_hort += dy
+            depth_hort += delta_depth
+
+        # по вертикале
+        x_vert, dx = (x_map + 1, 1) if cos > 0 else (x_map - 1e-6, -1)
+        depth_vert = (x_vert - x) / cos
+        y_vert = y + depth_vert * sin
+
+        delta_depth = dx / cos
+        dy = delta_depth * sin
+
+        for i in range(MAX_DEPTH):
+            coords = int(y_vert), int(x_vert)
+            if coords == (int(self.y), int(self.x)):
+                player_dist_hort = depth_vert
+                break
+            if coords in self.game.map.walls:
+                wall_dist_vert = depth_vert
+                break
+            x_vert += dx
+            y_vert += dy
+            depth_vert += delta_depth
+
+        player_dist = max(player_dist_vert, player_dist_hort)
+        wall_dist = max(wall_dist_vert, wall_dist_hort)
+
+        if 0 < player_dist < wall_dist or not wall_dist:
+            return True
+        return False
+
     def update(self):  # обновление
-        self.sprite_get()
+        if self.alive:
+            self.check_live()
+            self.sprite_get()
+        self.draw()
+
+    def draw(self):  # тестовая отрисовка видимости
+        pygame.draw.circle(self.game.screen, 'red', (100 * self.x, 100 * self.y), 15)
+        if self.check_walls():
+            pygame.draw.line(self.game.screen, 'orange', (100 * self.game.player.x, 100 * self.game.player.y),
+                             (100 * self.x, 100 * self.y))
 
 
-class AnimatedSpite(Sprite):  # класс анимированных спрайтов (для оружия и врагов)
+class AnimatedSpite(Sprite):  # класс анимированных спрайтов (для оружия)
     def __init__(self, game, pos, path, max_num, scale=1.0, shift=0.0, time=120):  # инициализация
         super().__init__(game, pos, f'{path}/1.png', scale, shift)
         self.time = time

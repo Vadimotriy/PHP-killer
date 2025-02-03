@@ -44,11 +44,15 @@ class Button(pygame.sprite.Sprite):  # класс кнопок
         return False
 
 
-class Sound:
-    def __init__(self, game):
+class Sound:  # класс звуков
+    def __init__(self, game):  # инициализация микшера
         self.game = game
         pygame.mixer.init()
+        self.sounds()
+
+    def sounds(self):  # коллекция звуков
         self.gun = pygame.mixer.Sound('Data/Sprites/gun/audio.mp3')
+        self.kill = pygame.mixer.Sound('Data/Sprites/NPC/audio.mp3')
 
 
 class Game:  # сама игра
