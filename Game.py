@@ -61,7 +61,9 @@ class Game:  # сама игра
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('PHP killer')
+        pygame.mouse.set_visible(True)
         self.clock = pygame.time.Clock()
+        self.csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
 
         self.level = 2
         self.delta = 1
@@ -108,15 +110,14 @@ class Game:  # сама игра
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
-        csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
-        csv = csv.sort_values(by=['points'], ascending=False)
+        self.csv = self.csv.sort_values(by=['points'], ascending=True)
 
-        names = list(csv['name'].head(4))
+        names = list(self.csv['name'].head(4))
         names = list(map(lambda x: self.font.render(x, True, '#FFFFFF'), names))
-        points = list(csv['points'].head(4))
+        points = list(self.csv['points'].head(4))
         points = list(map(lambda x: self.font.render(str(x), True, '#FFFFFF'), points))
         info = [(self.font.render('Имя', True, '#FFFFFF'),
-                 self.font.render('Очки', True, '#FFFFFF'))]
+                 self.font.render('Время, сек', True, '#FFFFFF'))]
         x, y = 200, 100
         for i, j in info + list(zip(names, points)):  # вывод результатов
             self.screen.blit(i, (x, y))
@@ -175,9 +176,14 @@ class Game:  # сама игра
             pygame.display.flip()
             self.delta = self.clock.tick(FPS)
 
-        if self.level != 3:
+        if self.level != 3:  #
             self.show_new_game()
             self.new_game()
+
+        end_time = time.time()
+        self.csv.loc[-1] = ['Player', round(end_time - self.start_time)]
+        self.csv.index += 1
+        self.csv.to_csv('Data/table_leaders.csv', index=False)
 
     def show_new_game(self):
         image = load_image('Data/Sprites/level_passed.jpg')

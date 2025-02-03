@@ -23,4 +23,4 @@ class Map:  # класс карты
 
     def draw(self):  # тестовая отрисовка
         for row, column in self.walls:
-            pygame.draw.rect(self.game.screen, '#FFFFFF', (column * 100, row * 100, 100, 100), 2)
+            pygame.draw.rect(self.game.screen, '#FFFFFF', (column * 50, row * 50, 50, 50), 2)

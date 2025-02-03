@@ -65,8 +65,8 @@ class Sprite:
         wall_dist_vert, wall_dist_hort = 0, 0
         player_dist_vert, player_dist_hort = 0, 0
 
-        sin = math.sin(self.theta)
-        cos = math.cos(self.theta)
+        sin = math.sin(self.theta) + 0.0001
+        cos = math.cos(self.theta) + 0.0001
 
         # по горизонтали
         y_hort, dy = (y_map + 1, 1) if sin > 0 else (y_map - 1e-6, -1)
@@ -121,10 +121,11 @@ class Sprite:
             self.sprite_get()
 
     def draw(self):  # тестовая отрисовка видимости
-        pygame.draw.circle(self.game.screen, '#FF0000', (100 * self.x, 100 * self.y), 15)
-        if self.check_walls():
-            start_pos, end_pos = (100 * self.game.player.x, 100 * self.game.player.y), (100 * self.x, 100 * self.y)
-            pygame.draw.line(self.game.screen, '#FFBB00', start_pos, end_pos)
+        if self.alive:
+            pygame.draw.circle(self.game.screen, '#FF0000', (50 * self.x, 50 * self.y), 15)
+            if self.check_walls():
+                start_pos, end_pos = (50 * self.game.player.x, 50 * self.game.player.y), (50 * self.x, 50 * self.y)
+                pygame.draw.line(self.game.screen, '#FFBB00', start_pos, end_pos)
 
 
 class AnimatedSpite(Sprite):  # класс анимированных спрайтов (для оружия)
@@ -177,3 +178,7 @@ class AllObjects:  # класс, в котором хранятся все об�
         for i in OBJECTS_COORDS[self.game.level]:  # выставляем всех слоников на карту
             path = f'Data/Sprites/NPC/php_{randint(1, 3)}.png'
             self.list.append(Sprite(self.game, i, path=path))
+
+    def draw(self):  # тестовая отрисовка
+        for i in self.list:
+            i.draw()
