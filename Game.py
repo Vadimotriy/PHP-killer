@@ -62,7 +62,7 @@ class Game:  # сама игра
         pygame.display.set_caption('PHP killer')
         self.clock = pygame.time.Clock()
 
-        self.level = 1
+        self.level = 2
         self.delta = 1
 
     def start_screen(self):  # стартовое окно

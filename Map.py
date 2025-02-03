@@ -15,8 +15,8 @@ class Map:  # класс карты
 
     def get_map(self):  # поиск стен
         walls = []
-        for row in range(9):
-            for column in range(16):
+        for row in range(len(self.map)):
+            for column in range(len(self.map[0])):
                 if self.map[row][column]:
                     walls.append((row, column))
         return walls
