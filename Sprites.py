@@ -49,7 +49,6 @@ class Sprite:
 
     def check_live(self):  # проверка жив ли слоник
         if self.game.player.shoot and self.check_walls():
-            print(self.imagewidth)
             if 800 - 128 < self.x_screen < 800 + 128:
                 self.game.player.shoot = False
                 self.alive = False
@@ -118,13 +117,12 @@ class Sprite:
         if self.alive:
             self.check_live()
             self.sprite_get()
-        self.draw()
 
     def draw(self):  # тестовая отрисовка видимости
-        pygame.draw.circle(self.game.screen, 'red', (100 * self.x, 100 * self.y), 15)
+        pygame.draw.circle(self.game.screen, '#FF0000', (100 * self.x, 100 * self.y), 15)
         if self.check_walls():
-            pygame.draw.line(self.game.screen, 'orange', (100 * self.game.player.x, 100 * self.game.player.y),
-                             (100 * self.x, 100 * self.y))
+            start_pos, end_pos = (100 * self.game.player.x, 100 * self.game.player.y), (100 * self.x, 100 * self.y)
+            pygame.draw.line(self.game.screen, '#FFBB00', start_pos, end_pos)
 
 
 class AnimatedSpite(Sprite):  # класс анимированных спрайтов (для оружия)
@@ -167,9 +165,12 @@ class AllObjects:  # класс, в котором хранятся все об�
         self.game = game
         self.list = []
 
-        for i in OBJECTS_COORDS[self.game.level]:
-            self.list.append(Sprite(self.game, i))
-
     def update(self):  # обновление
         for i in self.list:
             i.update()
+
+    def new_level(self):  # загрузка объектов нового уровня
+        self.list.clear()
+
+        for i in OBJECTS_COORDS[self.game.level]:  # выставляем всех слоников на карту
+            self.list.append(Sprite(self.game, i))

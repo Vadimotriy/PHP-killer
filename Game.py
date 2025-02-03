@@ -6,7 +6,7 @@ from Map import Map
 from Player import Player
 from Texturing import *
 from Sprites import AllObjects
-from  Weapon import Weapon
+from Weapon import Weapon
 
 
 def load_image(name, colorkey=None):  # функция по загрузке изображений
@@ -106,7 +106,7 @@ class Game:  # сама игра
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
-        csv = pandas.read_csv('Data/table_leaders.csv', sep=',')
+        csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
         csv = csv.sort_values(by=['points'], ascending=False)
 
         names = list(csv['name'].head(4))
@@ -134,11 +134,12 @@ class Game:  # сама игра
     def new_game(self):  # запуск нового уровня
         pygame.mouse.set_visible(False)
 
-        self.map = Map(self, f'Data/Maps/level_{self.level}.txt')
+        self.map = Map(self, f'Data/Maps/level_{self.level}.txt')  # создание всех объектов
         self.player = Player(self)
         self.texturing = Texturing(self)
         self.raytracing = Raytracing(self)
         self.all_objects = AllObjects(self)
+        self.all_objects.new_level()
         self.weapon = Weapon(self)
         self.sound = Sound(self)
 
@@ -149,19 +150,19 @@ class Game:  # сама игра
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminate()
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:  # если нажат Esc, то закрытие игры
                     if event.key == 27:
                         terminate()
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN:  # при клике левой кнопке мыши стрельба
                     if event.button == 1:
                         self.player.shooting()
 
-            self.player.update()
+            self.player.update()  # обновление всех классов
             self.raytracing.update()
             self.all_objects.update()
             self.weapon.update()
 
-            self.texturing.draw()
+            self.texturing.draw()  # отрисовка карты и оружия
             self.weapon.draw()
 
             pygame.display.flip()

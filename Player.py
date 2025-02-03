@@ -1,6 +1,5 @@
 import pygame
 
-
 from Constants import *
 
 
@@ -11,7 +10,7 @@ class Player:  # класс игрока
         self.angle = 0
         self.shoot = False
 
-    def shooting(self):
+    def shooting(self):  # стрельба
         if not self.shoot and not self.game.weapon.reloading:
             self.game.sound.gun.play()
             self.shoot = True
@@ -52,7 +51,7 @@ class Player:  # класс игрока
         self.mouse()
 
     def check_wall(self, move_x, move_y):  # проверка стены
-        def check(x, y):
+        def check(x, y):  # мини-функция для проверки стены
             return True if (int(y), int(x)) not in self.game.map.walls else False
 
         scale = PLAYER_SIZE / self.game.delta

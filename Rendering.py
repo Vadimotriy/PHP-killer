@@ -26,7 +26,6 @@ class Raytracing:  # класс отрисовки лучей
 
             self.object_to_rendering.append((depth, wall, wall_pos))
 
-
     def ray_cast(self):  # отрисовка лучей, получаем точки для рендера
         self.raycasting_result.clear()
         texture_vert, texture_hort = 1, 1

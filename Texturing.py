@@ -15,11 +15,11 @@ class Texturing:
         self.background_draw()
         self.object_render()
 
-    def background_draw(self): #отрисовка заднего фона
+    def background_draw(self):  # отрисовка заднего фона
         self.sky_offset = (self.sky_offset + 4.0 * self.game.player.rel) % WIDTH
         self.screen.blit(self.sky, (-self.sky_offset, 0))
         self.screen.blit(self.sky, (-self.sky_offset + WIDTH, 0))
-        pygame.draw.rect(self.screen, (30, 30, 30), (0, (HEIGHT // 2), WIDTH, HEIGHT)) #пол
+        pygame.draw.rect(self.screen, (30, 30, 30), (0, (HEIGHT // 2), WIDTH, HEIGHT))  # пол
 
     def object_render(self):
         object_list = sorted(self.game.raytracing.object_to_rendering, key=lambda x: x[0], reverse=True)

@@ -6,6 +6,7 @@ def load_level(name):  # загрузка уровня из txt файла
         map_level = map(lambda x: list(map(int, list(x))), file.read().split('\n'))
     return list(map_level)
 
+
 class Map:  # класс карты
     def __init__(self, game, name):  # инициализация
         self.game = game
