@@ -1,6 +1,8 @@
 import sys
-import pandas
+#import pandas
 import time
+
+import pygame
 
 from Rendering import *
 from Map import Map
@@ -63,9 +65,9 @@ class Game:  # сама игра
         pygame.display.set_caption('PHP killer')
         pygame.mouse.set_visible(True)
         self.clock = pygame.time.Clock()
-        self.csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
+        #self.csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
 
-        self.level = 2
+        self.level = 0
         self.delta = 1
 
     def start_screen(self):  # стартовое окно
@@ -106,7 +108,7 @@ class Game:  # сама игра
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    def table(self):  # таблица лидеров
+    '''def table(self):  # таблица лидеров
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
@@ -132,7 +134,7 @@ class Game:  # сама игра
                     return True
 
             pygame.display.flip()
-            self.clock.tick(FPS)
+            self.clock.tick(FPS)'''
 
     def new_game(self):  # запуск нового уровня
         self.level += 1
@@ -177,16 +179,52 @@ class Game:  # сама игра
             self.delta = self.clock.tick(FPS)
 
         if self.level != 3:  #
-            self.show_new_game()
+            self.show_text('Уровень Пройден!', 100)
             self.new_game()
+        else:
+            self.show_text('Победа!', 200)
 
         end_time = time.time()
-        self.csv.loc[-1] = ['Player', round(end_time - self.start_time)]
+        '''self.csv.loc[-1] = ['Player', round(end_time - self.start_time)]
         self.csv.index += 1
-        self.csv.to_csv('Data/table_leaders.csv', index=False)
+        self.csv.to_csv('Data/table_leaders.csv', index=False)'''
 
-    def show_new_game(self):
-        image = load_image('Data/Sprites/level_passed.jpg')
-        self.screen.blit(image, (0, 0))
-        pygame.display.flip()
-        time.sleep(3)
+    def show_text(self, text, size):
+        def draw(text, size):
+            self.screen.fill((0, 0, 0))
+            font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', size)
+            text = font.render(text, True, (255, 0, 0))
+            text_x = WIDTH // 2 - text.get_width() // 2
+            text_y = HEIGHT // 2 - text.get_height() // 2
+            text_w = text.get_width()
+            text_h = text.get_height()
+            self.screen.blit(text, (text_x, text_y))
+            pygame.display.flip()
+            time.sleep(3)
+        draw(text, size)
+
+    def nameget(self):
+        background = load_image('Data/Sprites/background_start_screen.png')
+        self.screen.blit(background, (0, 0))
+
+        self.font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 50)
+        text = ''
+        cz = self.font.render('введите имя', True, '#FFFFFF')
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == 0:
+                        if text:
+                            text = text[:-1]
+                    else:
+                        if event.key in FG.keys():
+                            text += FG[event.key]
+
+            self.screen.blit(background, (0, 0))
+            self.screen.blit(cz, (WIDTH // 2 - cz.get_width() // 2, 100))
+            self.screen.blit(self.font.render(text, True, '#FFFFFF'), (100, HEIGHT // 2 - text.get_height() // 2))
+            pygame.display.flip()
+            self.clock.tick(FPS)
