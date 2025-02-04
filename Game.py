@@ -1,8 +1,8 @@
 import sys
-#import pandas
+import pandas
 import time
 
-import pygame
+import pygame.mixer
 
 from Rendering import *
 from Map import Map
@@ -56,6 +56,7 @@ class Sound:  # класс звуков
     def sounds(self):  # коллекция звуков
         self.gun = pygame.mixer.Sound('Data/Sprites/gun/audio.mp3')
         self.kill = pygame.mixer.Sound('Data/Sprites/NPC/audio.mp3')
+        self.win = pygame.mixer.Sound('Data/win.mp3')
 
 
 class Game:  # сама игра
@@ -65,7 +66,7 @@ class Game:  # сама игра
         pygame.display.set_caption('PHP killer')
         pygame.mouse.set_visible(True)
         self.clock = pygame.time.Clock()
-        #self.csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
+        self.csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
 
         self.level = 0
         self.delta = 1
@@ -74,9 +75,9 @@ class Game:  # сама игра
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
-        self.font = pygame.font.Font(None, 50)
-        text = [self.font.render('Играть', True, '#FFFFFF'),
-                self.font.render('Таблица лидеров', True, '#FFFFFF')]
+        font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 25)
+        text = [font.render('Играть', True, '#FFFFFF'),
+                font.render('Таблица лидеров', True, '#FFFFFF')]
 
         button_play = pygame.sprite.Group()  # кнопка играть
         play_button = Button(button_play, 200 - 20)
@@ -108,18 +109,19 @@ class Game:  # сама игра
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    '''def table(self):  # таблица лидеров
+    def table(self):  # таблица лидеров
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
+        font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 30)
 
-        self.csv = self.csv.sort_values(by=['points'], ascending=True)
+        self.csv = self.csv.sort_values(by=['points'], ascending=True)  # сортируем csv
 
         names = list(self.csv['name'].head(4))
-        names = list(map(lambda x: self.font.render(x, True, '#FFFFFF'), names))
+        names = list(map(lambda x: font.render(x, True, '#FFFFFF'), names))
         points = list(self.csv['points'].head(4))
-        points = list(map(lambda x: self.font.render(str(x), True, '#FFFFFF'), points))
-        info = [(self.font.render('Имя', True, '#FFFFFF'),
-                 self.font.render('Время, сек', True, '#FFFFFF'))]
+        points = list(map(lambda x: font.render(str(x), True, '#FFFFFF'), points))
+        info = [(font.render('Имя', True, '#FFFFFF'),
+                 font.render('Время, сек', True, '#FFFFFF'))]
         x, y = 200, 100
         for i, j in info + list(zip(names, points)):  # вывод результатов
             self.screen.blit(i, (x, y))
@@ -134,7 +136,7 @@ class Game:  # сама игра
                     return True
 
             pygame.display.flip()
-            self.clock.tick(FPS)'''
+            self.clock.tick(FPS)
 
     def new_game(self):  # запуск нового уровня
         self.level += 1
@@ -157,7 +159,7 @@ class Game:  # сама игра
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminate()
-                if event.type == pygame.KEYDOWN:  # если нажат Esc, то закрытие игры
+                if event.type == pygame.KEYDOWN:  # если нажат Esc, то закрытие
                     if event.key == 27:
                         terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:  # при клике левой кнопке мыши стрельба
@@ -183,11 +185,12 @@ class Game:  # сама игра
             self.new_game()
         else:
             self.show_text('Победа!', 200)
-
-        end_time = time.time()
-        '''self.csv.loc[-1] = ['Player', round(end_time - self.start_time)]
-        self.csv.index += 1
-        self.csv.to_csv('Data/table_leaders.csv', index=False)'''
+            self.sound.win.play()
+            end_time = time.time()
+            name = self.nameget()
+            self.csv.loc[-1] = [name, round(end_time - self.start_time)]
+            self.csv.index += 1
+            self.csv.to_csv('Data/table_leaders.csv', index=False)
 
     def show_text(self, text, size):
         def draw(text, size):
@@ -196,35 +199,39 @@ class Game:  # сама игра
             text = font.render(text, True, (255, 0, 0))
             text_x = WIDTH // 2 - text.get_width() // 2
             text_y = HEIGHT // 2 - text.get_height() // 2
-            text_w = text.get_width()
-            text_h = text.get_height()
             self.screen.blit(text, (text_x, text_y))
             pygame.display.flip()
             time.sleep(3)
+
         draw(text, size)
 
     def nameget(self):
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
-        self.font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 50)
+        font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 50)
         text = ''
-        cz = self.font.render('введите имя', True, '#FFFFFF')
+        cz = font.render('введите имя', True, '#FFFFFF')
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminate()
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == 0:
+                    if event.key == 8:
                         if text:
                             text = text[:-1]
+                    elif event.key == 13:
+                        return text
                     else:
                         if event.key in FG.keys():
-                            text += FG[event.key]
+                            text += str(FG[event.key])
 
             self.screen.blit(background, (0, 0))
             self.screen.blit(cz, (WIDTH // 2 - cz.get_width() // 2, 100))
-            self.screen.blit(self.font.render(text, True, '#FFFFFF'), (100, HEIGHT // 2 - text.get_height() // 2))
+
+            text_render = font.render(text, True, '#FFFFFF')
+            self.screen.blit(text_render, (100, HEIGHT // 2 - text_render.get_height() // 2))
+
             pygame.display.flip()
             self.clock.tick(FPS)
