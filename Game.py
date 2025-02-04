@@ -1,7 +1,6 @@
 import sys
 import pandas
 import time
-
 import pygame.mixer
 
 from Rendering import *
@@ -42,7 +41,7 @@ class Button(pygame.sprite.Sprite):  # класс кнопок
         self.rect.x, self.rect.y = 600, y
 
     def update(self, pos):  # обновление
-        if self.rect.collidepoint(pos):
+        if self.rect.collidepoint(pos):  # использование collide
             return True
         return False
 
@@ -89,9 +88,9 @@ class Game:  # сама игра
         button_table.draw(self.screen)
         self.screen.blit(text[1], (WIDTH // 2 - text[1].get_width() // 2, 300))
 
-        while True:
+        while True:  # цикл
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # цикл
                     terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if play_button.update(event.pos):  # переход к игре
@@ -128,9 +127,9 @@ class Game:  # сама игра
             self.screen.blit(j, (x + 650, y))
             y += 150
 
-        while True:
+        while True:  # цикл
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # выход
                     terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:  # возврат к стартовому окну при любом клике
                     return True
@@ -174,16 +173,16 @@ class Game:  # сама игра
             self.texturing.draw()  # отрисовка карты и оружия
             self.weapon.draw()
 
-            if self.num_php == 0:
+            if self.num_php == 0:  # выход из цикла если все слоники убиты
                 break
 
             pygame.display.flip()
             self.delta = self.clock.tick(FPS)
 
-        if self.level != 3:  #
-            self.show_text('Уровень Пройден!', 100)
+        if self.level != 3:  # переход к новому уровню
+            self.show_text('Уровень пройден!', 100)
             self.new_game()
-        else:
+        else:  # завершение игры, запись в таблицу лидеров
             self.show_text('Победа!', 200)
             self.sound.win.play()
             end_time = time.time()
@@ -192,7 +191,7 @@ class Game:  # сама игра
             self.csv.index += 1
             self.csv.to_csv('Data/table_leaders.csv', index=False)
 
-    def show_text(self, text, size):
+    def show_text(self, text, size):  # вывод текста ('Победа!' или 'Уровень пройден!')
         def draw(text, size):
             self.screen.fill((0, 0, 0))
             font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', size)
@@ -205,26 +204,24 @@ class Game:  # сама игра
 
         draw(text, size)
 
-    def nameget(self):
+    def nameget(self):  # получаем от игрока имя
         background = load_image('Data/Sprites/background_start_screen.png')
         self.screen.blit(background, (0, 0))
 
         font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 50)
         text = ''
         cz = font.render('введите имя', True, '#FFFFFF')
-        while True:
+        while True:  # цикл ввода имени
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # завершение
                     terminate()
-
                 if event.type == pygame.KEYDOWN:
-                    if event.key == 8:
-                        if text:
-                            text = text[:-1]
-                    elif event.key == 13:
+                    if event.key == 8 and text:  # Backspace
+                        text = text[:-1]
+                    elif event.key == 13 and text:  # Enter
                         return text
                     else:
-                        if event.key in FG.keys():
+                        if event.key in FG.keys():  # цифры, буквы на английском, пробел и _
                             text += str(FG[event.key])
 
             self.screen.blit(background, (0, 0))
