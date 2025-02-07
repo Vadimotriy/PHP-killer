@@ -217,7 +217,7 @@ class Game:  # сама игра
                     terminate()
                 if event.type == pygame.KEYDOWN:
                     if event.key == 8 and text:  # Backspace
-                        text = text[:-1]
+                        text = text[:-1]  # тест
                     elif event.key == 13 and text:  # Enter
                         return text
                     else:
