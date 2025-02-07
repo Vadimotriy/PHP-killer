@@ -31,7 +31,7 @@ def terminate():  # функция по выходу из игры
 
 
 class Button(pygame.sprite.Sprite):  # класс кнопок
-    def __init__(self, spite_group, y):  # инициализация
+    def __init__(self, spite_group, y, is_music=False, lines=None):  # инициализация
         super().__init__(spite_group)
         image = pygame.Surface((400, 70))
         image.fill('#AAAAAA')
@@ -39,11 +39,25 @@ class Button(pygame.sprite.Sprite):  # класс кнопок
 
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = 600, y
+        self.music = is_music
+        self.lines = lines
+        if is_music:
+            self.draw()
 
     def update(self, pos):  # обновление
         if self.rect.collidepoint(pos):  # использование collide
+            if self.music:
+                self.draw()
             return True
         return False
+
+    def draw(self):  # отрисовка линий на музыке
+        if not self.lines:
+            pygame.draw.line(self.image, '#FF0000', (0, 0), (400, 70), 5)
+            pygame.draw.line(self.image, '#FF0000', (400, 0), (0, 70), 5)
+        else:
+            pygame.draw.rect(self.image, '#AAAAAA', (0, 0, 400, 70))
+        self.lines = not self.lines
 
 
 class Sound:  # класс звуков
@@ -53,22 +67,26 @@ class Sound:  # класс звуков
         self.sounds()
 
     def sounds(self):  # коллекция звуков
-        self.gun = pygame.mixer.Sound('Data/Sprites/gun/audio.mp3')
-        self.kill = pygame.mixer.Sound('Data/Sprites/NPC/audio.mp3')
-        self.win = pygame.mixer.Sound('Data/win.mp3')
+        self.gun = pygame.mixer.Sound('Data/musics/audio.mp3')
+        self.kill = pygame.mixer.Sound('Data/musics/audio_php.mp3')
+        self.win = pygame.mixer.Sound('Data/musics/win.mp3')
+        self.music = pygame.mixer.Sound('Data/musics/music.mp3')
+        self.music.set_volume(0.1)
 
 
 class Game:  # сама игра
     def __init__(self):  # инициализация
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption('PHP killer')
+        pygame.display.set_caption('PHP-killer')
         pygame.mouse.set_visible(True)
         self.clock = pygame.time.Clock()
+        self.sound = Sound(self)
         self.csv = pandas.read_csv('Data/table_leaders.csv', sep=',')  # csv таблица с таблицей лидеров
 
         self.level = 0
         self.delta = 1
+        self.music = True
 
     def start_screen(self):  # стартовое окно
         background = load_image('Data/Sprites/background_start_screen.png')
@@ -76,7 +94,8 @@ class Game:  # сама игра
 
         font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 25)
         text = [font.render('Играть', True, '#FFFFFF'),
-                font.render('Таблица лидеров', True, '#FFFFFF')]
+                font.render('Таблица лидеров', True, '#FFFFFF'),
+                font.render('Настройки', True, '#FFFFFF')]
 
         button_play = pygame.sprite.Group()  # кнопка играть
         play_button = Button(button_play, 200 - 20)
@@ -88,6 +107,20 @@ class Game:  # сама игра
         button_table.draw(self.screen)
         self.screen.blit(text[1], (WIDTH // 2 - text[1].get_width() // 2, 300))
 
+        button_settings = pygame.sprite.Group()  # кнопка настройки
+        settings_button = Button(button_settings, 400 - 20)
+        button_settings.draw(self.screen)
+        self.screen.blit(text[2], (WIDTH // 2 - text[2].get_width() // 2, 400))
+
+        def load():  # функция по выгрузке интерфейса
+            self.screen.blit(background, (0, 0))
+            button_play.draw(self.screen)
+            self.screen.blit(text[0], (WIDTH // 2 - text[0].get_width() // 2, 200))
+            button_table.draw(self.screen)
+            self.screen.blit(text[1], (WIDTH // 2 - text[1].get_width() // 2, 300))
+            button_settings.draw(self.screen)
+            self.screen.blit(text[2], (WIDTH // 2 - text[2].get_width() // 2, 400))
+
         while True:  # цикл
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # цикл
@@ -95,15 +128,17 @@ class Game:  # сама игра
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if play_button.update(event.pos):  # переход к игре
                         self.start_time = time.time()  # засекаем время
+                        if self.music:
+                            self.sound.music.play()
                         return True
+
                     elif table_button.update(event.pos):  # переход к таблице лидеров
                         self.table()
+                        load()
 
-                        self.screen.blit(background, (0, 0))
-                        button_play.draw(self.screen)
-                        self.screen.blit(text[0], (WIDTH // 2 - text[0].get_width() // 2, 200))
-                        button_table.draw(self.screen)
-                        self.screen.blit(text[1], (WIDTH // 2 - text[1].get_width() // 2, 300))
+                    elif settings_button.update(event.pos):  # переход к настройкам
+                        self.settings()
+                        load()
 
             pygame.display.flip()
             self.clock.tick(FPS)
@@ -137,6 +172,45 @@ class Game:  # сама игра
             pygame.display.flip()
             self.clock.tick(FPS)
 
+    def settings(self):
+        background = load_image('Data/Sprites/background_start_screen.png')
+        self.screen.blit(background, (0, 0))
+
+        font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 30)
+        info = [font.render('Управление', True, '#FFFFFF'),  # текст управления
+                font.render('', True, '#FFFFFF'),
+                font.render('WASD - ходьба', True, '#FFFFFF'),
+                font.render('Esc - преждевременный выход', True, '#FFFFFF'),
+                font.render('', True, '#FFFFFF'),
+                font.render('Управление мышкой - повороты', True, '#FFFFFF'),
+                font.render('ЛКМ - стрельба', True, '#FFFFFF')]
+        text = font.render('Музыка', True, '#FFFFFF')
+
+        y = 50
+        for i in info:  # вывод текста
+            self.screen.blit(i, (50, y))
+            y += 80
+
+        button_music = pygame.sprite.Group()  # кнопка таблицы лидеров
+        music_button = Button(button_music, 800 - 10, True, self.music)
+        button_music.draw(self.screen)
+        self.screen.blit(text, (WIDTH // 2 - text.get_width() // 2, 800))
+
+        while True:  # цикл
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # выход
+                    terminate()
+                if event.type == pygame.MOUSEBUTTONDOWN:  # возврат к стартовому окну при любом клике
+                    if music_button.update(event.pos):
+                        self.music = not self.music
+                        button_music.draw(self.screen)
+                        self.screen.blit(text, (WIDTH // 2 - text.get_width() // 2, 800))
+                    else:
+                        return True
+
+            pygame.display.flip()
+            self.clock.tick(FPS)
+
     def new_game(self):  # запуск нового уровня
         self.level += 1
         pygame.mouse.set_visible(False)
@@ -148,7 +222,6 @@ class Game:  # сама игра
         self.all_objects = AllObjects(self)
         self.all_objects.new_level()
         self.weapon = Weapon(self)
-        self.sound = Sound(self)
         self.num_php = NUMBER_OF_PHPS[self.level]
 
         self.run()
@@ -172,17 +245,26 @@ class Game:  # сама игра
 
             self.texturing.draw()  # отрисовка карты и оружия
             self.weapon.draw()
+            time_game = self.draw_time()
 
             if self.num_php == 0:  # выход из цикла если все слоники убиты
+                gameover = False
+                break
+            if time_game >= 180.0:
+                gameover = True
                 break
 
             pygame.display.flip()
             self.delta = self.clock.tick(FPS)
 
-        if self.level != 3:  # переход к новому уровню
+        if gameover:  # проигрыш
+            self.sound.music.stop()
+            self.show_text('PHP слоники победили...', 70)
+        elif self.level != 3:  # переход к новому уровню
             self.show_text('Уровень пройден!', 100)
             self.new_game()
         else:  # завершение игры, запись в таблицу лидеров
+            self.sound.music.stop()
             self.show_text('Победа!', 200)
             self.sound.win.play()
             end_time = time.time()
@@ -217,7 +299,7 @@ class Game:  # сама игра
                     terminate()
                 if event.type == pygame.KEYDOWN:
                     if event.key == 8 and text:  # Backspace
-                        text = text[:-1]  # тест
+                        text = text[:-1]
                     elif event.key == 13 and text:  # Enter
                         return text
                     else:
@@ -232,3 +314,11 @@ class Game:  # сама игра
 
             pygame.display.flip()
             self.clock.tick(FPS)
+
+    def draw_time(self):  # отрисовка времени
+        time_now = round(time.time() - self.start_time, 1)
+        font = pygame.font.Font('Data/font/minecraft-ten-font-cyrillic.ttf', 40)
+        text = font.render(str(time_now), True, '#00BB00')
+        self.screen.blit(text, (1425, 50))
+
+        return time_now
