@@ -4,14 +4,14 @@ from Constants import *
 
 
 class Texturing:
-    def __init__(self, game):
+    def __init__(self, game): # инициализация
         self.game = game
         self.screen = game.screen
         self.wall_textures = self.walltextures()
         self.sky = self.texture_change('Data/Sprites/sky.jpg', (WIDTH, (HEIGHT // 2)))
         self.sky_offset = 0
 
-    def draw(self):
+    def draw(self): # запуск отрисовки
         self.background_draw()
         self.object_render()
 
@@ -21,7 +21,7 @@ class Texturing:
         self.screen.blit(self.sky, (-self.sky_offset + WIDTH, 0))
         pygame.draw.rect(self.screen, (30, 30, 30), (0, (HEIGHT // 2), WIDTH, HEIGHT))  # пол
 
-    def object_render(self):
+    def object_render(self): # отрисовка объектов
         object_list = sorted(self.game.raytracing.object_to_rendering, key=lambda x: x[0], reverse=True)
         for depth, image, pos in object_list:
             self.screen.blit(image, pos)
